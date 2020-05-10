@@ -90,18 +90,14 @@ class MemberService
      */
     public function get(string $listId, string $subscriptionHash): MailChimpMember
     {
-        try {
-            $member = $this->entityManager->getRepository(MailChimpMember::class)
-                ->findOneBy(
-                    ['mailchimpId' => $subscriptionHash, 'listId' => $listId]
-                );
-            if (!isset($member)) {
-                throw new \Exception("Member not found");
-            }
-            return $member;
-        } catch (\Exception $e) {
-            return $e;
+        $member = $this->entityManager->getRepository(MailChimpMember::class)
+            ->findOneBy(
+                ['mailchimpId' => $subscriptionHash, 'listId' => $listId]
+            );
+        if (!isset($member)) {
+            throw new \Exception("Member not found");
         }
+        return $member;
     }
 
     /**
@@ -140,5 +136,29 @@ class MemberService
         }
         $this->entityManager->getConnection()->commit();
         return $member->toArray();
+    }
+
+    /**
+     * @param string $listId
+     * @param string $subscriptionHash
+     * @return bool
+     * @throws \Doctrine\DBAL\ConnectionException
+     */
+    public function delete(string $listId, string $subscriptionHash): bool
+    {
+        $this->entityManager->getConnection()->beginTransaction();
+        $member = $this->get($listId, $subscriptionHash);
+        $this->entityManager->remove($member);
+        $this->entityManager->flush();
+
+        $response = $this->mailchimp->delete(sprintf('lists/%s/members/%s', $listId, $subscriptionHash), $member->toMailChimpArray());
+
+        if ($response->get('error')) {
+            $this->entityManager->getConnection()->rollBack();
+            throw new Exception('Can not remove member');
+        }
+
+        $this->entityManager->getConnection()->commit();
+        return true;
     }
 }

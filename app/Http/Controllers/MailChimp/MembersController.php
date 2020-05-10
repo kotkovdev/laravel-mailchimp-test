@@ -8,7 +8,6 @@ use App\Services\MailChimp\MemberService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Mailchimp\Mailchimp;
-use Nette\Utils\Json;
 
 /**
  * Class MembersController
@@ -103,5 +102,20 @@ class MembersController extends Controller
             return $this->errorResponse(['message' => $e->getMessage()]);
         }
         return $this->successfulResponse($member);
+    }
+
+    /**
+     * @param string $listId
+     * @param string $subscriptionHash
+     * @return JsonResponse
+     */
+    public function delete(string $listId, string $subscriptionHash): JsonResponse
+    {
+        try {
+            $this->memberService->delete($listId, $subscriptionHash);
+        } catch (\Exception $e) {
+            $this->errorResponse(['message' => $e->getMessage()]);
+        }
+        return $this->successfulResponse(['message' => 'success']);
     }
 }
