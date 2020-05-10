@@ -8,6 +8,7 @@ use App\Services\MailChimp\MemberService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Mailchimp\Mailchimp;
+use Nette\Utils\Json;
 
 /**
  * Class MembersController
@@ -72,6 +73,32 @@ class MembersController extends Controller
                 throw new \Exception('Empty subscription hash parameter');
             }
             $member = $this->memberService->show($listId, $subscriptionHash);
+        } catch (\Exception $e) {
+            return $this->errorResponse(['message' => $e->getMessage()]);
+        }
+        return $this->successfulResponse($member);
+    }
+
+    /**
+     * @param Request $request
+     * @param string $listId
+     * @param string $subscriptionHash
+     * @return JsonResponse
+     */
+    public function update(Request $request, string $listId, string $subscriptionHash): JsonResponse
+    {
+        $validator = $this->getValidationFactory()
+            ->make($request->all(), MailChimpMember::getValidationRules());
+
+        if ($validator->fails()) {
+            return $this->errorResponse([
+                'message' => 'Invalid data',
+                'errors' => $validator->errors()->toArray()
+            ]);
+        }
+
+        try {
+            $member = $this->memberService->update($request->all(), $listId, $subscriptionHash);
         } catch (\Exception $e) {
             return $this->errorResponse(['message' => $e->getMessage()]);
         }

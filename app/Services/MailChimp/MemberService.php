@@ -7,18 +7,39 @@ use App\Database\Entities\MailChimp\MailChimpMember;
 use Doctrine\ORM\EntityManagerInterface;
 use Mailchimp\Mailchimp;
 
+/**
+ * Class MemberService
+ * @package App\Services\MailChimp
+ */
 class MemberService
 {
+    /**
+     * @var Mailchimp
+     */
     private $mailchimp;
 
+    /**
+     * @var EntityManagerInterface
+     */
     private $entityManager;
 
+    /**
+     * MemberService constructor.
+     * @param Mailchimp $mailchimp
+     * @param EntityManagerInterface $entityManager
+     */
     public function __construct(Mailchimp $mailchimp, EntityManagerInterface $entityManager)
     {
         $this->entityManager = $entityManager;
         $this->mailchimp = $mailchimp;
     }
 
+    /**
+     * @param string $listId
+     * @param array $data
+     * @return array
+     * @throws \Doctrine\DBAL\ConnectionException
+     */
     public function create(string $listId, array $data): array
     {
         $this->entityManager->getConnection()->beginTransaction();
@@ -36,15 +57,16 @@ class MemberService
 
             if (!$response->get('error')) {
                 $member->setMailChimpId($response->get('id'));
-                $member->setUniqueEmailId($response->get('unique_email_id'));
-                $member->setWebId($response->get('web_id'));
-                $member->setStats($response->get('stats'));
-                $member->setIpSignUp($response->get('ip_signup'));
-                $member->setTimestampSignUp($response->get('timestamp_signup'));
-                $member->setListId($response->get('list_id'));
-                /**
-                 * etc...
-                 */
+                $data = $response->map(function($row) {
+                    if (is_object($row)) {
+                        return (array)$row;
+                    }
+                    if (is_int($row)) {
+                        return (string)$row;
+                    }
+                    return $row;
+                })->toArray();
+                $member->fill($data);
                 $this->entityManager->persist($member);
                 $this->entityManager->flush();
                 $this->entityManager->getConnection()->commit();
@@ -61,19 +83,62 @@ class MemberService
         }
     }
 
-    public function show($listId, $subscriptionHash)
+    /**
+     * @param string $listId
+     * @param string $subscriptionHash
+     * @return MailChimpMember
+     */
+    public function get(string $listId, string $subscriptionHash): MailChimpMember
     {
         try {
             $member = $this->entityManager->getRepository(MailChimpMember::class)
                 ->findOneBy(
-                    ['memberId' => $subscriptionHash, 'listId' => $listId]
+                    ['mailchimpId' => $subscriptionHash, 'listId' => $listId]
                 );
             if (!isset($member)) {
                 throw new \Exception("Member not found");
             }
-            return $member->toArray();
+            return $member;
         } catch (\Exception $e) {
             return $e;
         }
+    }
+
+    /**
+     * @param string $listId
+     * @param string $subscriptionHash
+     * @return array
+     */
+    public function show(string $listId, string $subscriptionHash): array
+    {
+        return $this->get($listId, $subscriptionHash)->toArray();
+    }
+
+    /**
+     * @param array $data
+     * @param string $listId
+     * @param string $subscriptionHash
+     * @return array
+     * @throws \Doctrine\DBAL\ConnectionException
+     */
+    public function update(array $data, string $listId, string $subscriptionHash): array
+    {
+        $this->entityManager->getConnection()->beginTransaction();
+        $member = $this->get($listId, $subscriptionHash);
+        if (!isset($member)) {
+            throw new \Exception('Can not found member');
+        }
+        $member->fill($data);
+        $this->entityManager->persist($member);
+        $this->entityManager->flush();
+
+        //Update the mailchimp record
+        $response = $this->mailchimp->patch(sprintf('lists/%s/members/%s', $listId, $subscriptionHash), $member->toMailChimpArray());
+        if ($response->get('error')) {
+            $this->entityManager->getConnection()->rollBack();
+            throw new \Exception('Error while updating member');
+        }
+        $this->entityManager->getConnection()->commit();
+        return $member->toArray();
     }
 }
