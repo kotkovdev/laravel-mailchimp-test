@@ -20,7 +20,7 @@ class MailChimpMember extends MailChimpEntity
     private $memberId;
 
     /**
-     * @ORM\Column(name="mailchimp_id", type="integer", nullable=true)
+     * @ORM\Column(name="mailchimp_id", type="string", nullable=true)
      */
     private $mailchimpId;
 

@@ -56,4 +56,25 @@ class MembersController extends Controller
             return $this->errorResponse(['message' => $e->getMessage()]);
         }
     }
+
+    /**
+     * @param string $listId
+     * @param string $subscriptionHash
+     * @return JsonResponse
+     */
+    public function show(string $listId, string $subscriptionHash): JsonResponse
+    {
+        try {
+            if (empty($listId)) {
+                throw new \Exception('Empty list_id parameter');
+            }
+            if (empty($subscriptionHash)) {
+                throw new \Exception('Empty subscription hash parameter');
+            }
+            $member = $this->memberService->show($listId, $subscriptionHash);
+        } catch (\Exception $e) {
+            return $this->errorResponse(['message' => $e->getMessage()]);
+        }
+        return $this->successfulResponse($member);
+    }
 }

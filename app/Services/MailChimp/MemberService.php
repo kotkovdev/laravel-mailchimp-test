@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace App\Services\MailChimp;
 
 use App\Database\Entities\MailChimp\MailChimpMember;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Mailchimp\Mailchimp;
 
@@ -42,9 +41,12 @@ class MemberService
                 $member->setStats($response->get('stats'));
                 $member->setIpSignUp($response->get('ip_signup'));
                 $member->setTimestampSignUp($response->get('timestamp_signup'));
+                $member->setListId($response->get('list_id'));
                 /**
                  * etc...
                  */
+                $this->entityManager->persist($member);
+                $this->entityManager->flush();
                 $this->entityManager->getConnection()->commit();
                 return $member->toArray();
             }
@@ -57,7 +59,21 @@ class MemberService
                 'member' => $member->toMailChimpArray()
             ];
         }
+    }
 
-
+    public function show($listId, $subscriptionHash)
+    {
+        try {
+            $member = $this->entityManager->getRepository(MailChimpMember::class)
+                ->findOneBy(
+                    ['memberId' => $subscriptionHash, 'listId' => $listId]
+                );
+            if (!isset($member)) {
+                throw new \Exception("Member not found");
+            }
+            return $member->toArray();
+        } catch (\Exception $e) {
+            return $e;
+        }
     }
 }
