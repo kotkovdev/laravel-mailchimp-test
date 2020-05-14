@@ -19,6 +19,11 @@ $router->group(['prefix' => 'mailchimp', 'namespace' => 'MailChimp'], function (
     });
 });
 
+//Users group
 $router->group(['prefix' => 'user', 'namespace' => 'User'], function () use ($router) {
     $router->post('/', 'UserController@create');
+    $router->get('/list', 'UserController@list');
+    $router->get('/{userId}', 'UserController@show');
+    $router->put('/{userId}', 'UserController@update');
+    $router->delete('/{userId}', 'UserController@delete');
 });
