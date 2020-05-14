@@ -30,7 +30,7 @@ class User
     private $lastName;
 
     /**
-     * @ORM\Column(name="email", type="string")
+     * @ORM\Column(name="email", type="string", unique=true)
      */
     private $email;
 
@@ -47,7 +47,7 @@ class User
     /**
      * @return mixed
      */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
