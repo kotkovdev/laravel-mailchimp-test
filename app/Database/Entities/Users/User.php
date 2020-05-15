@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace App\Database\Entities\Users;
 
+use App\Database\Entities\Entity;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use EoneoPay\Utils\Str;
 
@@ -10,11 +13,11 @@ use EoneoPay\Utils\Str;
  * @ORM\Entity()
  * @ORM\HasLifecycleCallbacks()
  */
-class User
+class User extends Entity
 {
     /**
      * @ORM\Id
-     * @ORM\Column(type="integer")
+     * @ORM\Column(name="user_id", type="integer")
      * @ORM\GeneratedValue
      */
     private $id;
@@ -35,6 +38,11 @@ class User
     private $email;
 
     /**
+     * @ORM\OneToMany(targetEntity="UserGroup", mappedBy="users")
+     */
+    private $groups;
+
+    /**
      * @ORM\Column(name="created_at", type="datetime")
      */
     private $createdAt;
@@ -50,6 +58,12 @@ class User
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function __construct(?array $data = null)
+    {
+        $this->groups =new ArrayCollection();
+        parent::__construct($data);
     }
 
     /**
@@ -87,6 +101,22 @@ class User
     public function setEmail($email): void
     {
         $this->email = $email;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getGroups(): Collection
+    {
+        return $this->groups;
+    }
+
+    /**
+     * @param mixed $groups
+     */
+    public function setGroups($groups): void
+    {
+        $this->groups = $groups;
     }
 
     /**

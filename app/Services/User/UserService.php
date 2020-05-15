@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Services\User;
 
 use App\Database\Entities\Users\User;
+use App\Database\Entities\Users\UserGroup;
 use Doctrine\ORM\EntityManager;
 
 /**
@@ -22,13 +23,16 @@ class UserService
      */
     private $userRepository;
 
+    private $userGroupService;
+
     /**
      * UserService constructor.
      * @param \Doctrine\ORM\EntityManager $entityManager
      */
-    public function __construct(EntityManager $entityManager)
+    public function __construct(EntityManager $entityManager, UserGroupService $userGroupService)
     {
         $this->entityManager = $entityManager;
+        $this->userGroupService = $userGroupService;
         $this->userRepository = $this->entityManager->getRepository(User::class);
     }
 
@@ -40,10 +44,7 @@ class UserService
      */
     public function create(array $data): User
     {
-        $user = new User();
-        $user->setEmail($data['email']);
-        $user->setFirstName($data['first_name']);
-        $user->setLastName($data['last_name']);
+        $user = new User($data);
         $this->entityManager->persist($user);
         $this->entityManager->flush();
         if (!$user->getId()) {
@@ -64,6 +65,36 @@ class UserService
             throw new \Exception('User not found');
         }
         return $user;
+    }
+
+    /**
+     * @param string $userId
+     * @param array $data
+     * @return \App\Database\Entities\Users\User
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function update(string $userId, array $data): User
+    {
+        $user = $this->get($userId);
+        $user->fill($data);
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
+        return $user;
+    }
+
+    /**
+     * @param string $userId
+     * @return bool|null
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function delete(string $userId): ?bool
+    {
+        $user = $this->get($userId);
+        $this->entityManager->remove($user);
+        $this->entityManager->flush();
+        return true;
     }
 
     /**

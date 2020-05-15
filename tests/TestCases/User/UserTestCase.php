@@ -41,10 +41,7 @@ class UserTestCase extends WithDatabaseTestCase
      */
     public function createUser($userData)
     {
-        $user = new User();
-        $user->setEmail($userData['email']);
-        $user->setFirstName($userData['first_name']);
-        $user->setLastName($userData['last_name']);
+        $user = new User($userData);
         $this->entityManager->persist($user);
         $this->entityManager->flush();
     }
