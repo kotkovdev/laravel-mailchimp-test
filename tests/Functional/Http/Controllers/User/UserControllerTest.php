@@ -53,7 +53,7 @@ class UserControllerTest extends UserTestCase
         $this->assertEquals('User not found', $response['message']);
     }
 
-    public function testListResponse()
+    public function testListSuccess()
     {
         $this->createUser(self::$createUserData);
         $this->get('/user/list');
@@ -63,12 +63,35 @@ class UserControllerTest extends UserTestCase
         $this->assertEquals(self::$createUserData['email'], $response[0]['email']);
     }
 
-    public function testEmptyUsersListResponse()
+    public function testEmptyUsersListSuccess()
     {
         $this->get('/user/list');
         $this->assertResponseStatus(500);
         $response = json_decode($this->response->getContent(), true);
         $this->assertArrayHasKey('message', $response);
         $this->assertEquals('Users is empty', $response['message']);
+    }
+
+    public function testUpdateUserSuccess()
+    {
+        $this->createUser(self::$createUserData);
+        $this->put('/user/1', ['first_name' => 'Bill', 'last_name' => 'Gates']);
+        $this->assertResponseOk();
+        $response = json_decode($this->response->getContent(), true);
+        $this->assertArrayHasKey('id', $response);
+        $this->assertArrayHasKey('first_name', $response);
+        $this->assertArrayHasKey('last_name', $response);
+        $this->assertEquals('Bill', $response['first_name']);
+        $this->assertEquals('Gates', $response['last_name']);
+    }
+
+    public function testUserDeleteSuccess()
+    {
+        $this->createUser(self::$createUserData);
+        $this->delete('/user/1');
+        $this->assertResponseOk();
+        $response = json_decode($this->response->getContent(), true);
+        $this->assertArrayHasKey('success', $response);
+        $this->assertEquals(true, $response['success']);
     }
 }

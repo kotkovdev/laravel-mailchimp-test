@@ -1,32 +1,31 @@
 <?php
 declare(strict_types=1);
+
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
-use App\Services\User\UserService;
-
-use Illuminate\Http\JsonResponse;
+use App\Services\User\UserGroupService;
 use Illuminate\Http\Request;
-use Nette\Utils\Json;
+use Illuminate\Http\JsonResponse;
 
 /**
- * Class UserController
+ * Class GroupController
  * @package App\Http\Controllers\User
  */
-class UserController extends Controller
+class GroupController extends Controller
 {
     /**
-     * @var \App\Services\User\UserService
+     * @var \App\Services\User\UserGroupService
      */
-    private $userService;
+    private $groupService;
 
     /**
-     * UserController constructor.
-     * @param \App\Services\User\UserService $userService
+     * GroupController constructor.
+     * @param \App\Services\User\UserGroupService $groupService
      */
-    public function __construct(UserService $userService)
+    public function __construct(UserGroupService $groupService)
     {
-        $this->userService = $userService;
+        $this->groupService = $groupService;
     }
 
     /**
@@ -37,22 +36,22 @@ class UserController extends Controller
     {
         try {
             $data = $request->all();
-            $user = $this->userService->create($data);
-            return $this->successfulResponse($user->toArray());
+            $group = $this->groupService->create($data);
+            return $this->successfulResponse($group->toArray());
         } catch (\Exception $e) {
             return $this->errorResponse(['message' => $e->getMessage()], 500);
         }
     }
 
     /**
-     * @param string $userId
+     * @param string $groupId
      * @return \Illuminate\Http\JsonResponse
      */
-    public function show(string $userId): JsonResponse
+    public function show(string $groupId): JsonResponse
     {
         try {
-            $user = $this->userService->get($userId);
-            return $this->successfulResponse($user->toArray());
+            $group = $this->groupService->get($groupId);
+            return $this->successfulResponse($group->toArray());
         } catch (\Exception $e) {
             return $this->errorResponse(['message' => $e->getMessage()], 500);
         }
@@ -61,11 +60,11 @@ class UserController extends Controller
     /**
      * @return \Illuminate\Http\JsonResponse
      */
-    public function list(): JsonResponse
+    public function list()
     {
         try {
-            $users = $this->userService->all();
-            return $this->successfulResponse($users);
+            $groups = $this->groupService->all();
+            return $this->successfulResponse($groups);
         } catch (\Exception $e) {
             return $this->errorResponse(['message' => $e->getMessage()], 500);
         }
@@ -73,28 +72,28 @@ class UserController extends Controller
 
     /**
      * @param \Illuminate\Http\Request $request
-     * @param string $userId
+     * @param string $groupId
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, string $userId): JsonResponse
+    public function update(Request $request, string $groupId): JsonResponse
     {
         try {
-            $user = $this->userService->update($userId, $request->all());
-            return $this->successfulResponse($user->toArray());
+            $group = $this->groupService->update($groupId, $request->all());
+            return $this->successfulResponse($group->toArray());
         } catch (\Exception $e) {
             return $this->errorResponse(['message' => $e->getMessage()], 500);
         }
     }
 
     /**
-     * @param string $userId
+     * @param string $groupId
      * @return \Illuminate\Http\JsonResponse
      */
-    public function delete(string $userId): JsonResponse
+    public function delete(string $groupId): JsonResponse
     {
         try {
-            $result = $this->userService->delete($userId);
-            return $this->successfulResponse(['success' => true]);
+            $group = $this->groupService->delete($groupId);
+            return $this->successfulResponse(['success' => 'true']);
         } catch (\Exception $e) {
             return $this->errorResponse(['message' => $e->getMessage()], 500);
         }
