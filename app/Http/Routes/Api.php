@@ -11,5 +11,28 @@ $router->group(['prefix' => 'mailchimp', 'namespace' => 'MailChimp'], function (
         $router->get('/{listId}', 'ListsController@show');
         $router->put('/{listId}', 'ListsController@update');
         $router->delete('/{listId}', 'ListsController@remove');
+
+        $router->post('/{listId}/members', 'MembersController@create');
+        $router->get('/{listId}/members/{subscriptionHash}', 'MembersController@show');
+        $router->put('/{listId}/members/{subscriptionHash}', 'MembersController@update');
+        $router->delete('/{listId}/members/{subscriptionHash}', 'MembersController@delete');
     });
+});
+
+//Users group
+$router->group(['prefix' => 'user', 'namespace' => 'User'], function () use ($router) {
+    //users groups group
+    $router->group(['prefix' => 'group'], function () use ($router) {
+        $router->post('/', 'GroupController@create');
+        $router->get('/list', 'GroupController@list');
+        $router->get('/{groupId}', 'GroupController@show');
+        $router->put('/{groupId}', 'GroupController@update');
+        $router->delete('/{groupId}', 'GroupController@delete');
+    });
+
+    $router->post('/', 'UserController@create');
+    $router->get('/list', 'UserController@list');
+    $router->get('/{userId}', 'UserController@show');
+    $router->put('/{userId}', 'UserController@update');
+    $router->delete('/{userId}', 'UserController@delete');
 });
