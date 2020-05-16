@@ -9,7 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
 /**
- * Class GroupController
+ * Class GroupController.
+ *
  * @package App\Http\Controllers\User
  */
 class GroupController extends Controller
@@ -21,6 +22,7 @@ class GroupController extends Controller
 
     /**
      * GroupController constructor.
+     *
      * @param \App\Services\User\UserGroupService $groupService
      */
     public function __construct(UserGroupService $groupService)
@@ -29,7 +31,10 @@ class GroupController extends Controller
     }
 
     /**
+     * Create a new user group.
+     *
      * @param \Illuminate\Http\Request $request
+     *
      * @return \Illuminate\Http\JsonResponse
      */
     public function create(Request $request): JsonResponse
@@ -44,7 +49,10 @@ class GroupController extends Controller
     }
 
     /**
+     * Show user group by id.
+     *
      * @param string $groupId
+     *
      * @return \Illuminate\Http\JsonResponse
      */
     public function show(string $groupId): JsonResponse
@@ -58,6 +66,8 @@ class GroupController extends Controller
     }
 
     /**
+     * List all user groups.
+     *
      * @return \Illuminate\Http\JsonResponse
      */
     public function list()
@@ -71,8 +81,11 @@ class GroupController extends Controller
     }
 
     /**
+     * Update user group.
+     *
      * @param \Illuminate\Http\Request $request
      * @param string $groupId
+     *
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, string $groupId): JsonResponse
@@ -86,7 +99,10 @@ class GroupController extends Controller
     }
 
     /**
+     * Delete user group by id.
+     *
      * @param string $groupId
+     *
      * @return \Illuminate\Http\JsonResponse
      */
     public function delete(string $groupId): JsonResponse

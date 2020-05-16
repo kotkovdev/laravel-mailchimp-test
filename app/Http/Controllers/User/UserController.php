@@ -10,7 +10,8 @@ use Illuminate\Http\Request;
 use Nette\Utils\Json;
 
 /**
- * Class UserController
+ * Class UserController.
+ *
  * @package App\Http\Controllers\User
  */
 class UserController extends Controller
@@ -22,6 +23,7 @@ class UserController extends Controller
 
     /**
      * UserController constructor.
+     *
      * @param \App\Services\User\UserService $userService
      */
     public function __construct(UserService $userService)
@@ -30,7 +32,10 @@ class UserController extends Controller
     }
 
     /**
+     * Create new user.
+     *
      * @param \Illuminate\Http\Request $request
+     *
      * @return \Illuminate\Http\JsonResponse
      */
     public function create(Request $request): JsonResponse
@@ -45,7 +50,10 @@ class UserController extends Controller
     }
 
     /**
+     * Show user by id.
+     *
      * @param string $userId
+     *
      * @return \Illuminate\Http\JsonResponse
      */
     public function show(string $userId): JsonResponse
@@ -59,6 +67,8 @@ class UserController extends Controller
     }
 
     /**
+     * List all users.
+     *
      * @return \Illuminate\Http\JsonResponse
      */
     public function list(): JsonResponse
@@ -72,8 +82,11 @@ class UserController extends Controller
     }
 
     /**
+     * Update the user.
+     *
      * @param \Illuminate\Http\Request $request
      * @param string $userId
+     *
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, string $userId): JsonResponse
@@ -87,7 +100,10 @@ class UserController extends Controller
     }
 
     /**
+     * Delete the user by id.
+     *
      * @param string $userId
+     *
      * @return \Illuminate\Http\JsonResponse
      */
     public function delete(string $userId): JsonResponse
