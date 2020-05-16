@@ -8,7 +8,8 @@ use App\Database\Entities\Users\UserGroup;
 use Doctrine\ORM\EntityManager;
 
 /**
- * Class UserService
+ * Class UserService.
+ *
  * @package App\Services\User
  */
 class UserService
@@ -27,6 +28,7 @@ class UserService
 
     /**
      * UserService constructor.
+     *
      * @param \Doctrine\ORM\EntityManager $entityManager
      */
     public function __construct(EntityManager $entityManager, UserGroupService $userGroupService)
@@ -37,8 +39,12 @@ class UserService
     }
 
     /**
+     * Create a new user.
+     *
      * @param array $data
+     *
      * @return \App\Database\Entities\Users\User
+     *
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
@@ -54,8 +60,12 @@ class UserService
     }
 
     /**
+     * Get user by id.
+     *
      * @param string $userId
+     *
      * @return \App\Database\Entities\Users\User
+     *
      * @throws \Exception
      */
     public function get(string $userId): User
@@ -68,9 +78,13 @@ class UserService
     }
 
     /**
+     * Update the user.
+     *
      * @param string $userId
      * @param array $data
+     *
      * @return \App\Database\Entities\Users\User
+     *
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
@@ -84,8 +98,12 @@ class UserService
     }
 
     /**
+     * Delete the user.
+     *
      * @param string $userId
+     *
      * @return bool|null
+     *
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
@@ -98,7 +116,10 @@ class UserService
     }
 
     /**
+     * Get all users.
+     *
      * @return array
+     *
      * @throws \Exception
      */
     public function all(): array

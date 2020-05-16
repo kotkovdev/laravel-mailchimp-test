@@ -7,7 +7,8 @@ use App\Database\Entities\Users\UserGroup;
 use Doctrine\ORM\EntityManager;
 
 /**
- * Class UserGroupService
+ * Class UserGroupService.
+ *
  * @package App\Services\User
  */
 class UserGroupService
@@ -24,6 +25,7 @@ class UserGroupService
 
     /**
      * UserGroupService constructor.
+     *
      * @param \Doctrine\ORM\EntityManager $entityManager
      */
     public function __construct(EntityManager $entityManager)
@@ -33,8 +35,12 @@ class UserGroupService
     }
 
     /**
+     * Create a new user group.
+     *
      * @param $data
+     *
      * @return \App\Database\Entities\Users\UserGroup
+     *
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
@@ -50,9 +56,13 @@ class UserGroupService
     }
 
     /**
+     * Update the user group.
+     *
      * @param string $groupId
      * @param array $data
+     *
      * @return \App\Database\Entities\Users\UserGroup
+     *
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
@@ -66,8 +76,12 @@ class UserGroupService
     }
 
     /**
+     * Delete the user group.
+     *
      * @param string $groupId
+     *
      * @return bool
+     *
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
@@ -80,7 +94,10 @@ class UserGroupService
     }
 
     /**
+     * Get the user group.
+     *
      * @param $groupId
+     *
      * @return object|null
      * @throws \Exception
      */
@@ -94,6 +111,8 @@ class UserGroupService
     }
 
     /**
+     * Get all user groups.
+     *
      * @return array
      */
     public function all(): array
